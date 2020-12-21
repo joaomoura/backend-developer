@@ -99,7 +99,7 @@ class SalesController extends Controller
             }
             // Monta array com os dados da parcela
             $installments[$i]['installment'] = $i+1;
-            $installments[$i]['amount'] = (float)($diff>0 ? ($amountPart+$diff) : $amountPart);
+            $installments[$i]['amount'] = (float)( ($diff>0 && $i==0) ? ($amountPart+$diff) : $amountPart );
             $installments[$i]['date'] = $datePart;
         }
         // Retorna os dados das Parcelas
