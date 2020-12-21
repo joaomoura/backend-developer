@@ -1,0 +1,54 @@
+<?php
+namespace App\Http\Controllers;
+
+use App\User;
+use Firebase\JWT\JWT;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
+class TokenController extends Controller
+{
+    /**
+     * Register a new user
+     * @return Response
+     * @throws ReflectionException
+     */
+    public function criarUsuario(Request $request)
+    {
+        $this->validate($request, [
+            'email' => 'required|email|unique:usuarios',
+            'password' => 'required|min:8'
+        ]);
+
+        return response()
+            ->json(
+                User::create(['email' => $request->email,'password' => Hash::make($request->password)]),
+                201
+            );
+
+    }
+
+    public function gerarToken(Request $request)
+    {
+        $this->validate($request, [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+        $usuario = User::where('email', $request->email)->first();
+
+        if (is_null($usuario)
+            || !Hash::check($request->password, $usuario->password)
+        ) {
+            return response()->json('Usuário ou senha inválidos', 401);
+        }
+
+        $token = JWT::encode(
+            ['email' => $request->email],
+            env('JWT_KEY')
+        );
+
+        return [
+            'access_token' => $token
+        ];
+    }
+}

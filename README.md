@@ -1,67 +1,41 @@
-# Test Backend Developer Loopa Digital
+# Projeto BackEnd API | Loopa 
 
-## O que será avaliado
- - Lógica de programação
- - Estruturação dos componentes desenvolvidos
- - Boas práticas de desenvolvimento (ex: SOLID)
- - Conhecimentos da linguagem
- - Conhecimentos do framework utilizado
 
-## Exigências para desenvolvimento
 
- - A aplicação deve ser desenvolvida utilizando o framework **PHP Lumen**
+**Elaborar uma API que receba um arquivo e faça a leitura e interpretação dos dados contidos nas linhas do arquivo.**
 
-## Como submeter o teste
+Projeto desenvolvido com o Micro-framework PHP Lumen
+Servidor enbutido da própria instalação do PHP 7.4.9 
+Postam para os testes da API
 
- - Crie um fork deste projeto e submeta um Pull Request quando finalizar.
- - É essencial a criação de um arquivo READ.MD com instruções claras de como instalar e executar o seu projeto.
- 
- ## O teste
+---
 
-Elaborar uma API que receba um arquivo e faça a leitura e interpretação dos dados contidos nas linhas do arquivo.
+## Como Instalar
 
-A leitura dos dados deve ser feita de acordo com sua posição e tamanho dentro da linha do arquivo de exemplo, seguindo especificações da tabela abaixo:
+Instalação do Lumen via CLI
+Instale o Lumen emitindo o comando Composer *create-project* em seu terminal:
 
-| Posição | Tamanho | Descrição |
-| ------- | ------- | --------- |
-| 1 | 3 | ID da venda |
-| 4 | 8 | Data da venda (formato YYYYMMDD) |
-| 12 | 10 | Valor da venda (os dois últimos números são as casas decimais) |
-| 22 | 2 | Número de parcelas da venda |
-| 24 | 20 | Nome do cliente |
-| 44 | 8 | Cep do comprador |
+```
+composer create-project --prefer-dist laravel/lumen <nome-do-projeto>
+```
 
-#### Exemplo de leitura
+## Subindo no Servidor
 
-Ao se ler a linha `12320201012000011132703Comprador 1         06050190`, o resultado deve ser o seguinte:
+Para subir o projeto num servidor local, você pode usar o servidor de desenvolvimento embutido do PHP: 
 
-| 1 > 3 | 4 > 8 | 12 > 10 | 22 > 2 | 24 > 20 | 44 > 8 |
-| ----- | ----- | ------- | ------ | ------- | ------ |
-| 123 | 20201012 | 0000111327 | 03 | Comprador 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | 06050190 |
+```
+ php -S localhost:8000 -t public
+```
 
-#### Interpretação
+## Executando o Projeto 
 
-Após a leitura, os dados devem ser interpretados e transformados para o formato correto da informação. Exemplo:
+Os serviços da API podem ser testados através das seguintes requisições:
 
-| Base | Resultado | Regra |
-| ---- | --------- | ----- |
-| 123 | 123 | Nenhuma regra |
-| 20201012 | 2020-10-12 | A data segue o formato YYYY-MM-DD |
-| 0000111327 | 1113.27 | Valor é convertido para float, sendo os dois últmos dígitos as casas decimais
-| 03 | 3 | O número de parcelas deve ser um inteiro |
-| Comprador 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Comprador 1 | Os últimos espaços removidos |
-| 06050190 | (Endereço) | Cep será transformado no endereço conforme próximos passos |
+1. Para registro de um usuário: POST "*http://localhost:8000/api/register*", parâmetros: "*email*" e "*password*", se ocorrer tudo bem o usuário é cadastrado e redirecionado para a tela de login, caso contrário "e-mail já esteja cadastrado" retorna para a tela de cadastro novamente;
+2. Para Login/Autenticação: POST "*http://localhost:8000/api/login*", parâmetros: "*email*" e "*password*", se ocorrer tudo bem o usuário é redirecionado para a página inicial "Dashboard", caso contrário retorna para a tela de login;
+3. Submeter arquivo para representação dos dados das vendas: POST "*http://localhost:8000/api/sales*", parâmetro: "*file*" com o caminho do arquivo text, vide exemplo: "*C:\\\\[pasta-localhost]\\\\loopa\\\\public\\\\uploads\\\\sales.txt*".
 
- - O CEP deverá ser consultado em uma API externa para trazer as informações do endereço e complementar os dados do cliente
-   - Pode-se utilizar a API de exemplo [viacep](https://viacep.com.br/ws/06330000/json/) (Ou qualquer outra se desejar)
- - A venda deve ser desmembrada em parcelas de acordo com o número de parcelas informado no arquivo
- - Cada parcela deve conter o número, valor e data experada seguindo as regras:
-   - A diferença da soma das parcelas para o valor da venda deve ser incluída na primeira parcela
-   - A data experada deve ser de 30 dias após a data da venda para cada parcela. Não pode cair em fim de semana.
-
-### Dados de exemplo do conteúdo do arquivo
-
-Arquivo de exemplo *sales.txt* está incluso no repositõrio
+Assim espera-se que seja possível a leitura do arquivo passado como parâmetro, vide exemplo do arquivo txt e sua representação:
 
 ```
 12320201012000011132703Comprador 1         06050190
@@ -69,45 +43,149 @@ Arquivo de exemplo *sales.txt* está incluso no repositõrio
 23120201014000026370003Comprador 3         01454000
 ```
 
-### Exemplo de resposta da API
+Resposta:
 
-Usando de exemplo a terceira linha `23120201014000026370003Comprador 3         01454000`, a resposta da API deve seguir o seguinte formato.
-
-```JSON
+```
 {
     "sales": [
         {
-            "id": 231,
-            "date": "2020-10-14",
-            "amount": 2638.00,
-            "customer": {
-                "name": "Comprador 3",
-                "address": {
-                    "street": "Av Cidade Jardin",
-                    "neighborhood": "Jardim Paulistano",
-                    "city": "Sâo Paulo",
-                    "state": "SP",
-                    "postal_code": "01454-000"
-                }
-            },
+            "id": "123",
+            "date": "2020-10-12",
+            "amount": 1113.27,
             "installments": [
                 {
                     "installment": 1,
-                    "amount": 879.34,
-                    "date": "2020-11-16"
+                    "amount": 371.09,
+                    "date": "2020-11-11"
                 },
                 {
                     "installment": 2,
-                    "amount": 879.33,
+                    "amount": 371.09,
+                    "date": "2020-12-11"
+                },
+                {
+                    "installment": 3,
+                    "amount": 371.09,
+                    "date": "2021-01-11"
+                }
+            ],
+            "customer": {
+                "name": "Comprador 1",
+                "address": {
+                    "street": "Rua Deodate Pereira Rezende",
+                    "neighborhood": "Jaguaribe",
+                    "city": "Osasco",
+                    "state": "SP",
+                    "postal_code": "06050-190"
+                }
+            }
+        },
+        {
+            "id": "321",
+            "date": "2020-10-13",
+            "amount": 1563.75,
+            "installments": [
+                {
+                    "installment": 1,
+                    "amount": 390.96,
+                    "date": "2020-11-12"
+                },
+                {
+                    "installment": 2,
+                    "amount": 390.96,
                     "date": "2020-12-14"
                 },
                 {
                     "installment": 3,
-                    "amount": 879.33,
-                    "date": "2021-01-14"
+                    "amount": 390.96,
+                    "date": "2021-01-11"
+                },
+                {
+                    "installment": 4,
+                    "amount": 390.96,
+                    "date": "2021-02-10"
                 }
-            ]
+            ],
+            "customer": {
+                "name": "Comprador 2",
+                "address": {
+                    "street": "Estrada do Copiúva",
+                    "neighborhood": "Vila da Oportunidade",
+                    "city": "Carapicuíba",
+                    "state": "SP",
+                    "postal_code": "06330-000"
+                }
+            }
+        },
+        {
+            "id": "231",
+            "date": "2020-10-14",
+            "amount": 2637,
+            "installments": [
+                {
+                    "installment": 1,
+                    "amount": 879,
+                    "date": "2020-11-13"
+                },
+                {
+                    "installment": 2,
+                    "amount": 879,
+                    "date": "2020-12-14"
+                },
+                {
+                    "installment": 3,
+                    "amount": 879,
+                    "date": "2021-01-12"
+                }
+            ],
+            "customer": {
+                "name": "Comprador 3",
+                "address": {
+                    "street": "Avenida Cidade Jardim",
+                    "neighborhood": "Jardim Paulistano",
+                    "city": "São Paulo",
+                    "state": "SP",
+                    "postal_code": "01454-000"
+                }
+            }
         }
     ]
 }
 ```
+
+## Extras - FrontEnd
+
+Os serviços da API podem ser testados também atrasvés do Front que consome a API desenvolvido também pelo Lumen, na mesma aplicação:
+Lembrando que todas as funções são feitas via consumo da API.
+
+Para isso eu subi a aplicação em um outro servidor:
+
+```
+ php -S localhost:8080 -t public
+```
+
+Dessa forma o front ficou consumindo do servidor anterior o "*localhost:8000*".
+
+Seguem os acessos:
+
+1. Para registro de um usuário pelo Front acessar "*http://localhost:8080/register*", fornecer os dados de "*email*" e "*password*", logo depois submeter o formulário para registro;
+1. Para Login/Autenticação acessar *http://localhost:8080/login*", preencher os parâmetros: "*email*" e "*password*", logo depois submeter o formulário, com issoo sistema irá autenticará o usuário tornando possível o consumo da API de Vendas;
+3. Submeter arquivo fia formulário no front para representação dos dados das vendas, acessar "*http://localhost:8080*", escolher o arquivo para download via tela de seleção e submeter o formulário, o arquivo deverá ser subido no servidor e o mesmo será usada para consumo da API que trará o resultado dos dados das Vendas para representção na tela da Tabela e no exemplo do formato JSON.
+4. Ao consumir a API pelo Front, caso o usuário não esteja autenticado ou não autorizado o mesmo é remetido à tela de login para autenticação. Evitando que o usuário receba um erro inesperado.
+
+Assim espera-se que seja possível a leitura do arquivo passado como parâmetro, vide exemplo do arquivo txt e sua representação:
+
+## Extras - Banco de Dados
+
+Também fiz com que ao acessar a API e subir um arquivo TXT os dados fossem lançados no Banco de Dados.
+
+Deixei essa opção desabilita por padrão "*Linhas Comentadas*" no arquivo da chamada da API "*http://localhost:8000/api/sales*".
+
+Para usar ess opção extrar basta descomentar esses trechos.
+
+As Tabelas podem ser criadas através das Migrations via CLI
+
+```
+ php artisan migrate --force
+```
+
