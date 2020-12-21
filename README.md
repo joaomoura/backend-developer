@@ -17,7 +17,7 @@ Usar o arquivo .env.example e criar o arquivo .env com base naquele
 1. Definir os dados de acesso do Banco de dados para criar as tabelas de Usuários e as tabelas sales e installments caso queira ter os registros das vendas no Banco de dados (no código o trecho responsável por isso está comentado);
 2. No "**.env.example**" consta a definição também da variável "**JWT_KEY**" responsável pela autenticação via **JWT**.
 3. Subir as seguintes Bibliotecas e/ou Classes terceiras para o funcionmento dos recursos necessários, via Composer:
-4. Executar o comando ``` Composer update ``` para atualizar as bibliotecas e classes terceiras para o corretofuncionamento do projeto.
+4. Executar o comando ``` Composer update ``` para atualizar as bibliotecas e classes terceiras para o correto funcionamento do projeto.
 
 ## Como Instalar
 
